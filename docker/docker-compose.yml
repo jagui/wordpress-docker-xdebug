@@ -20,7 +20,6 @@ services:
       - 8080:80
   wordpress:
     build: ./wordpress
-    image: wordpress
     container_name: wordpress
     environment:
       - WORDPRESS_DB_HOST=db
@@ -28,9 +27,21 @@ services:
       - WORDPRESS_DB_PASSWORD=wordpress
       - WORDPRESS_DB_NAME=wordpress
       - WORDPRESS_TABLE_PREFIX=wp
+      - WORDPRESS_DEBUG=1
+      - |
+        WORDPRESS_CONFIG_EXTRA=
+        define('SITE_URL', 'http://wordpress' );
+        define('WP_HOME', 'http://wordpress' );
+        define('WP_CONTENT_DIR', $$_SERVER['DOCUMENT_ROOT'] . '/content' );
+        define('WP_CONTENT_URL', SITE_URL . '/content' );
+        define('WP_PLUGIN_DIR', $$_SERVER['DOCUMENT_ROOT'] . '/plugins' );
+        define('WP_PLUGIN_URL', SITE_URL . '/plugins' );
+        define('FS_METHOD','direct');
     depends_on:
       - db
     volumes:
-      - ../fs:/var/www/html
+      - ../core:/var/www/html
+      - ../content:/var/www/html/content
+      - ../plugins:/var/www/html/plugins
     ports:
       - 80:80
